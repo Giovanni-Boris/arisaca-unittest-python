@@ -17,7 +17,7 @@ class testLogueoCuenta(unittest.TestCase):
 
     def test_validarLogueoEnTercerIntento(self):
         cajero = Cajero()
-        # usuario Jack
+        # usuario Luna
         resultado = cajero.contraseña(['000', '142', '123'])[1]
         self.assertEqual(resultado, 'Luna')
 
