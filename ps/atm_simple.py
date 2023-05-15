@@ -2,66 +2,67 @@
 """
 Created on Tue May  9 16:46:29 2023
 
-@author: LAB02 
+@author: LAB02
 """
-
 import os
-cuentas={'001' : 'Dave' , '123': 'Luna' , '456': 'Joel', '765': 'Jack' , '341': 'Danitza'}
+from dataBase import cuentas
 
 class Cajero:
-
     def __init__(self):
         self.continuar = True
-        self.monto = 5000
-        self.menu()
 
- 
+    def contraseña(self, contraseñas):
+        contador = 3
+        if(contraseñas):
+            contador = min(len(contraseñas), 3)
+        usuario = None
+        i = 0
 
-    def contraseña(self):
-        print(cuentas)
-        contador = 1
-        while contador <= 3:
-            x = input("ingrese su contraseña:" )
-            user = cuentas.get(x)
-            if user!=None:
+        while contador > 0:
+            if(not contraseñas):
+                x = input("ingrese su contraseña:" )
+            else:
+                x = contraseñas[i]
+            usuario = cuentas.get(x)
+
+            if usuario != None:
                 print("Contraseña Correcta")
-                print(f"Bienvenido {user}")
+                print(f"Bienvenido {usuario[0]}")
                 break
             else:
-                print(f"Contraseña Incorrecta, le quedan {3 - contador} intentos")
-                if contador == 3:
-                    print("No puede realizar operaciones.")
-                    self.continuar = False
-                contador+=1
+                contador -= 1
+                i += 1
+                print(f"Contraseña Incorrecta, le quedan {contador} intentos")
+
+        if(usuario):
+            return [x, usuario[0]]
+        else:
+            return [x, usuario]
 
     def menu(self):
-        os.system("cls")   #esto es solo para windows
-        self.contraseña()
-        if self.continuar == False:
-            return  
+        #os.system("cls")
+        contraseña, usuario = self.contraseña([])
+        if not usuario:
+            print("No puede realizar operaciones")
+            return
 
         opcion = 0
         while opcion != "4":
             #os.system("cls")
             print(""" Bienvenido al cajero automatico
-
             ******Menú******
-
             1-  Depositar
-
             2- Retirar
-
             3- Ver saldo
-
             4- Salir """)
             opcion = input("Su opción es: ")
             if self.continuar:
                 if opcion == "1" :
-                    self.depositar()
+                    self.depositar(contraseña)
                 elif opcion == "2" :
-                    self.retiro()
+                    self.retiro(contraseña)
                 elif opcion == "3":
-                    self.ver()
+                    self.ver(contraseña)
                 elif opcion == "4":
                     print("Programa finalizado")
                 else:
@@ -74,42 +75,38 @@ class Cajero:
                 else:
                     print("No existe esa opción")
 
-    def depositar(self):    
-	    dep = int(input("Ingrese su monto a depositar:"))
-	    print(self.validarDepositar(dep))
-            
+    def depositar(self, contraseña):
+        dep = int(input("Ingrese su monto a depositar:"))
+        print(self.validarDepositar(dep, contraseña))
+
     # Funcion para validar monto a depositar
-    def validarDepositar(self,dep):
+    def validarDepositar(self, dep, contraseña):
         if dep <= 0:
             return "Monto no valido"
         if dep>3000:
             return "Monto no valido para menos de 3000 soles"
-        self.monto+=dep
-        return f"Su nuevo saldo es {self.monto}"
+        cuentas.get(contraseña)[1] += dep
+        #self.monto+=dep
+        return f"Su nuevo saldo es {cuentas.get(contraseña)[1]}"
 
- 
-
-    def retiro(self):
+    def retiro(self, contraseña):
         retirar=int(input("¿Cuánto desea retirar? : "))
-        print("Su monto actual es", self.monto)
-        print(self.validarRetiro(retirar))
-        
+        print("Su monto actual es", cuentas.get(contraseña)[1])
+        print(self.validarRetiro(retirar, contraseña))
 
-    def validarRetiro(self,retirar):
+    def validarRetiro(self, retirar, contraseña):
         if retirar > 3000:
             return "Monto no permitido de retirar > 3000 soles"
         elif retirar <=0:
             return "Monto no valido"
-        elif self.monto >= retirar :
-            self.monto-=retirar
-            return f"Retiro exitoso nuevo monto es {self.monto}"
+        elif cuentas.get(contraseña)[1] >= retirar :
+            cuentas.get(contraseña)[1] -= retirar
+            return f"Retiro exitoso nuevo monto es {cuentas.get(contraseña)[1]}"
         else:
             return "Imposible de realizar, su monto es menor"
 
+    def ver(self, contraseña):
+        print(f"Su saldo es: {cuentas.get(contraseña)[1]}")
 
-    def ver(self):
-        print("Su saldo es: " , self.monto)
-
- 
-
-app = Cajero()
+#app = Cajero()
+#app.menu()
